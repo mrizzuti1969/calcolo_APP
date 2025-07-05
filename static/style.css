@@ -1,0 +1,38 @@
+body {
+    font-family: sans-serif;
+    background: #f8f9fa;
+    color: #333;
+}
+.container {
+    width: 400px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+.row {
+    display: flex;
+    margin-bottom: 8px;
+}
+label {
+    width: 180px;
+    font-weight: bold;
+}
+input {
+    flex: 1;
+    text-align: right;
+    padding: 4px;
+}
+.logo {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.buttons {
+    text-align: center;
+    margin-top: 10px;
+}
+button {
+    margin: 2px;
+    padding: 6px 12px;
+}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+<meta name="theme-color" content="#007ACC">
+<title>Calcolatore Prezzi</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom right, #e0f7fa, #ffffff);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  .container {
+    background: #ffffffdd;
+    border-radius: 10px;
+    padding: 25px 30px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 450px;
+  }
+  h1 {
+    text-align: center;
+    color: #00796b;
+    margin-bottom: 15px;
+    font-size: 22px;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+  }
+  label {
+    width: 60%;
+    font-weight: 500;
+  }
+  input {
+    width: 35%;
+    padding: 4px;
+    text-align: right;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    width: 48%;
+    padding: 6px;
+    margin-top: 12px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  #resetBtn {
+    background-color: #9e9e9e;
+  }
+  #searchBtn {
+    background-color: #00796b;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🧮 Calcolatore Prezzi</h1>
+
+<div class="row"><label>ARTICOLO:</label><input type="text" id="articolo"></div>
+<div class="row"><label>PRICE LIST (€):</label><input type="number" id="priceList" readonly></div>
+<div class="row"><label>SCONTO 1 (%):</label><input type="number" id="sconto1" value="30"></div>
+<div class="row"><label>NETTO 1 (€):</label><input type="number" id="netto1" readonly></div>
+<div class="row"><label>SCONTO 2 (%):</label><input type="number" id="sconto2" value="20"></div>
+<div class="row"><label>NETTO 2 (€):</label><input type="number" id="netto2" readonly></div>
+<div class="row"><label>SCONTO 3 (%):</label><input type="number" id="sconto3" value="0"></div>
+<div class="row"><label>NETTO 3 (€):</label><input type="number" id="netto3" readonly></div>
+<div class="row"><label>NETTO CLIENTE (€):</label><input type="number" id="nettoCliente"></div>
+<div class="row"><label>RICARICA (%):</label><input type="number" id="ricarica" readonly></div>
+<div class="row"><label>MARGINE (%):</label><input type="number" id="margine" readonly></div>
+<div class="row"><label>CALCOLA NETTO DA RICARICA (%):</label><input type="number" value ="18" id="calcolaRicarica"></div>
+<div class="row"><label>CALCOLA NETTO DA MARGINE (%):</label><input type="number" id="calcolaMargine"></div>
+
+<!-- Nuove Caselle -->
+<div class="row"><label>SCONTO 2 SELL IN (%):</label><input type="number" id="sconto2SellIn" readonly></div>
+<div class="row"><label>SCONTO TOTALE SELL IN (%):</label><input type="number" id="scontoTotaleSellIn" readonly></div>
+<div class="row"><label>SCONTO 2 SELL OUT (%):</label><input type="number" id="sconto2SellOut" readonly></div>
+<div class="row"><label>SCONTO TOTALE SELL OUT (%):</label><input type="number" id="scontoTotaleSellOut" readonly></div>
+
+<div class="row" style="justify-content: center;">
+  <button id="resetBtn" onclick="resetFields()">RESET</button>
+  <button id="searchBtn" onclick="searchArticolo()">SEARCH</button>
+</div>
+<div class="row" style="justify-content: center;">
+  <button style="background-color: #0288d1; margin-top:10px; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;"
+          onclick="exportCSV()">EXPORT CSV</button>
+</div>
+
+
+<script>
+function updateCalcoli() {
+  let price = parseFloat(document.getElementById('priceList').value) || 0;
+  let s1 = parseFloat(document.getElementById('sconto1').value) || 0;
+  let s2 = parseFloat(document.getElementById('sconto2').value) || 0;
+  let s3 = parseFloat(document.getElementById('sconto3').value) || 0;
+
+  let netto1 = price * (1 - s1 / 100);
+  document.getElementById('netto1').value = netto1.toFixed(2);
+
+  let netto2 = netto1 * (1 - s2 / 100);
+  document.getElementById('netto2').value = netto2.toFixed(2);
+
+  let netto3 = s3 !== 0 ? netto2 * (1 - s3 / 100) : netto2;
+  document.getElementById('netto3').value = netto3.toFixed(2);
+
+  let nettoCliente = parseFloat(document.getElementById('nettoCliente').value) || 0;
+  if (nettoCliente !== 0) {
+    document.getElementById('ricarica').value = (((nettoCliente - netto3) / netto3) * 100).toFixed(2);
+    document.getElementById('margine').value = (((nettoCliente - netto3) / nettoCliente) * 100).toFixed(2);
+  } else {
+    document.getElementById('ricarica').value = '';
+    document.getElementById('margine').value = '';
+  }
+
+  // Nuove Caselle calcoli
+  document.getElementById('sconto2SellIn').value = price ? ((1 - netto3 / netto1) * 100).toFixed(2) : '';
+  document.getElementById('scontoTotaleSellIn').value = price ? ((1 - netto3 / price) * 100).toFixed(2) : '';
+  document.getElementById('sconto2SellOut').value = price ? ((1 - nettoCliente / netto1) * 100).toFixed(2) : '';
+  document.getElementById('scontoTotaleSellOut').value = price ? ((1 - nettoCliente / price) * 100).toFixed(2) : '';
+}
+
+document.querySelectorAll('#sconto1,#sconto2,#sconto3,#nettoCliente').forEach(input => {
+  input.addEventListener('input', updateCalcoli);
+});
+
+document.getElementById('calcolaRicarica').addEventListener('input', () => {
+  let r = parseFloat(document.getElementById('calcolaRicarica').value) || 0;
+  let netto3 = parseFloat(document.getElementById('netto3').value) || 0;
+  let nettoCliente = netto3 * (1 + r / 100);
+  document.getElementById('nettoCliente').value = nettoCliente.toFixed(2);
+  updateCalcoli();
+});
+document.getElementById('calcolaMargine').addEventListener('input', () => {
+  let m = parseFloat(document.getElementById('calcolaMargine').value) || 0;
+  let netto3 = parseFloat(document.getElementById('netto3').value) || 0;
+  let nettoCliente = netto3 / (1 - m / 100);
+  document.getElementById('nettoCliente').value = nettoCliente.toFixed(2);
+  updateCalcoli();
+});
+
+document.getElementById('nettoCliente').addEventListener('input', updateCalcoli);
+
+// SEARCH
+function searchArticolo() {
+  let articolo = document.getElementById('articolo').value;
+  fetch('/search', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ articolo })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('priceList').value = data.price;
+      updateCalcoli();
+    } else {
+      alert('Articolo non trovato!');
+    }
+  })
+  .catch(() => alert('Errore nella ricerca.'));
+}
+
+// RESET
+function resetFields() {
+  document.getElementById('sconto1').value = 30;
+  document.getElementById('sconto2').value = 20;
+  document.getElementById('sconto3').value = 0;
+  document.getElementById('nettoCliente').value = 0;
+  document.getElementById('calcolaRicarica').value = 0;
+  document.getElementById('calcolaMargine').value = 0;
+  updateCalcoli();
+}
+function exportCSV() {
+  // Mappa: id input -> etichetta
+  const fields = [
+    { id: 'articolo', label: 'ARTICOLO' },
+    { id: 'priceList', label: 'PRICE LIST (€)' },
+    { id: 'sconto1', label: 'SCONTO 1 (%)' },
+    { id: 'netto1', label: 'NETTO 1 (€)' },
+    { id: 'sconto2', label: 'SCONTO 2 (%)' },
+    { id: 'netto2', label: 'NETTO 2 (€)' },
+    { id: 'sconto3', label: 'SCONTO 3 (%)' },
+    { id: 'netto3', label: 'NETTO 3 (€)' },
+    { id: 'nettoCliente', label: 'NETTO CLIENTE (€)' },
+    { id: 'calcolaRicarica', label: 'CALCOLA NETTO DA RICARICA (%)' },
+    { id: 'calcolaMargine', label: 'CALCOLA NETTO DA MARGINE (%)' },
+    { id: 'sconto2SellIn', label: 'SCONTO 2 SELL IN (%)' },
+    { id: 'scontoTotaleSellIn', label: 'SCONTO TOTALE SELL IN (%)' },
+    { id: 'sconto2SellOut', label: 'SCONTO 2 SELL OUT (%)' },
+    { id: 'scontoTotaleSellOut', label: 'SCONTO TOTALE SELL OUT (%)' }
+  ];
+  // Escludiamo 'ricarica' e 'margine'
+  // NB: sono rispettivamente Casella 11 e 12, ma li togliamo direttamente
+
+  let csv = 'Etichetta;Valore\n';
+  fields.forEach(f => {
+    const value = document.getElementById(f.id).value || '';
+    csv += `${f.label};${value}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "calcolo.csv");
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+function calcola() {
+    // Qui aggiungi i tuoi calcoli come prima per aggiornare netto1, netto2, ecc.
+}
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('{{ url_for('static', filename='service-worker.js') }}')
+      .then(function() { console.log('Service Worker Registered'); });
+  }
+</script>
+
+</body>
+</html>
+
+
+

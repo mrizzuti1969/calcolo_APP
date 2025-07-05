@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: calcolo-app
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
