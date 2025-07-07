@@ -16,7 +16,7 @@ def search():
     try:
         df = pd.read_csv(listino_path, delimiter=';|,', engine='python')
         df.columns = [c.strip().upper() for c in df.columns]
-        row = df[df['ARTICOLO'].astype(str).str.strip() == str(articolo).strip()]
+        row = df[df['ARTICOLO'].astype(str).str.lower() == str(articolo).lower()]
         if not row.empty:
             price = row.iloc[0]['LIST PRICE']
             price_str = str(price).replace('€','').replace(',','.').strip()
