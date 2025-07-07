@@ -1,11 +1,28 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import pandas as pd
 import os
 
 app = Flask(__name__)
 
-
 @app.route('/')
+def home():
+    return redirect('/login')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        user = request.form['user']
+        password = request.form['password']
+        df = pd.read_csv('Autorizzazioni.csv')
+        match = df[(df['user'] == user) & (df['password'] == password)]
+        if not match.empty:
+            return redirect(url_for('index'))
+        else:
+            error = "Utente o Password non validi"
+    return render_template('login.html', error=error)
+
+@app.route('/index')
 def index():
     return render_template('index.html')
 
@@ -26,11 +43,5 @@ def search():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=10000)
-
-
-
-
-
-
+if __name__ == '__main__':
+    app.run(debug=True)
