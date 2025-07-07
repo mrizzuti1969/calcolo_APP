@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f5f7fa; color: #333; text-align: center; }
+    .container { max-width: 300px; margin: auto; margin-top: 100px; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 0 10px #ccc; }
+    label { display: block; margin-top: 10px; text-align: left; }
+    input { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; }
+    button { margin-top: 15px; padding: 10px; width: 100%; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #005f99; }
+    .error { color: red; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form method="POST" action="/login">
+      <label for="user">User</label>
+      <input type="text" name="user" id="user" required>
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required>
+      <button type="submit">Sign in</button>
+    </form>
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>
