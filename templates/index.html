@@ -111,6 +111,7 @@
 <div class="row"><label>CALCOLA NETTO DA RICARICA (%):</label><input type="number" value ="18" id="calcolaRicarica"></div>
 <div class="row"><label>CALCOLA NETTO DA MARGINE (%):</label><input type="number" id="calcolaMargine"></div>
 <div class="row"><label>CALCOLA NETTO DA SCONTO 2 SELL OUT (%):</label><input type="number" id="calcolaNetto"></div>
+<div class="row"><label>NOTE:</label><input type="text" id="note"></div>  
 
 <div class="row" style="justify-content: center;">
   <button id="resetBtn" onclick="resetFields()">RESET</button>
@@ -237,6 +238,7 @@ function exportCSV() {
     { id: 'scontoTotaleSellIn', label: 'SCONTO TOTALE SELL IN (%)' },
     { id: 'sconto2SellOut', label: 'SCONTO 2 SELL OUT (%)' },
     { id: 'scontoTotaleSellOut', label: 'SCONTO TOTALE SELL OUT (%)' }
+    { id: 'note', label: 'NOTE' }
   ];
   // Escludiamo 'ricarica' e 'margine'
   // NB: sono rispettivamente Casella 11 e 12, ma li togliamo direttamente
