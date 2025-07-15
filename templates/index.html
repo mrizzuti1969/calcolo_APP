@@ -66,6 +66,9 @@
   #searchBtn {
     background-color: #00796b;
   }
+    #netto1, #netto2, #netto3, #ricarica, #margine, #sconto2SellIn, #scontoTotaleSellIn, #sconto2SellOut, #scontoTotaleSellOut {
+    background-color: #ededed;
+  }
 @media (max-width: 500px) {
   .container {
     width: 95%;
@@ -94,7 +97,7 @@
 <div class="row"><label>PRICE LIST (€):</label><input type="number" id="priceList" ></div>
 <div class="row"><label>SCONTO 1 (%):</label><input type="number" id="sconto1" value="30"></div>
 <div class="row"><label>NETTO 1 (€):</label><input type="number" id="netto1" readonly></div>
-<div class="row"><label>SCONTO 2 (%):</label><input type="number" id="sconto2" value="20"></div>
+<div class="row"><label>SCONTO 2 (%):</label><input type="number" id="sconto2" value="22"></div>
 <div class="row"><label>NETTO 2 (€):</label><input type="number" id="netto2" readonly></div>
 <div class="row"><label>SCONTO 3 (%):</label><input type="number" id="sconto3" value="0"></div>
 <div class="row"><label>NETTO 3 (€):</label><input type="number" id="netto3" readonly></div>
@@ -202,8 +205,13 @@ function searchArticolo() {
 // RESET
 function resetFields() {
   document.getElementById('sconto1').value = 30;
-  document.getElementById('sconto2').value = 20;
+  document.getElementById('sconto2').value = 22;
   document.getElementById('sconto3').value = 0;
+  document.getElementById('articolo').value = " ";
+  document.getElementById('priceList').value = " ";
+  document.getElementById('netto1').value = 0;
+  document.getElementById('netto2').value = 0;
+  document.getElementById('netto3').value = 0;
   document.getElementById('nettoCliente').value = 0;
   document.getElementById('calcolaRicarica').value = 0;
   document.getElementById('calcolaMargine').value = 0;
